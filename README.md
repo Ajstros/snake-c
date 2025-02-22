@@ -18,8 +18,8 @@ Create fruit with icon @
 Need to:
 
 1. Press enter to start game
-2. Show snake
-3. Generate fruit
+2. Generate fruit
+3. Show game board
 4. Move snake according to arrow keys or WASD
 5. Check for snake collision with fruit, edges of screen, itself
     * Fruit -> Make snake one longer by not deleting the last element (tail) of the snake when we update the screen
