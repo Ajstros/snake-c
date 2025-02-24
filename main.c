@@ -23,11 +23,14 @@ struct Snake {
 struct Snake initSnake();
 struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]);
 void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]);
-enum Direction inputLoop();
+enum Direction decodeInput(int ch, enum Direction currentDirection);
 void updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]);
 
 int main(int argc, char *argv[]) {
   int running = 1;
+  int updateTime = 200;
+  int updateCount = 0;
+  int waitInterval = 20;
   int ch;
   struct Snake snake;
   struct Coordinates fruit;
@@ -68,9 +71,15 @@ int main(int argc, char *argv[]) {
 
   while (running) {
     /*4. Move snake according to arrow keys or WASD*/
-    snake.direction = inputLoop();
-    updateSnake(&snake, game_board);
-    printGameBoard(game_board);
+    ch = getch();
+    snake.direction = decodeInput(ch, snake.direction);
+    napms(waitInterval);
+    updateCount += waitInterval;
+    if (updateCount >= updateTime) {
+      updateCount = 0;
+      updateSnake(&snake, game_board);
+      printGameBoard(game_board);
+    }
 
     /*5. Check for snake collision with fruit, edges of screen, itself*/
 
@@ -111,49 +120,45 @@ void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   refresh();
 }
 
-enum Direction inputLoop() {
-  int ch;
-  while (1) {
-    ch = getch();
-    if (ch == '\033') { // Escape value -> Arrow keys
-      getch();      // Skip '[' value
-      ch = getch(); // Reassign ABCD value for direction of arrow key
-      switch (ch) {
-        case 'a':
-          return UP;
-          break;
-        case 'b':
-          return DOWN;
-          break;
-        case 'c':
-          return RIGHT;
-          break;
-        case 'd':
-          return LEFT;
-          break;
-        default:
-          break;
-      }
-    } else {  // Normal key -> WASD
-      switch (ch) {
-        case 'w':
-          return UP;
-          break;
-        case 's':
-          return DOWN;
-          break;
-        case 'd':
-          return RIGHT;
-          break;
-        case 'a':
-          return LEFT;
-          break;
-        default:
-          break;
-      }
+enum Direction decodeInput(int ch, enum Direction currentDirection) {
+  if (ch == '\033') { // Escape value -> Arrow keys
+    getch();      // Skip '[' value
+    ch = getch(); // Reassign ABCD value for direction of arrow key
+    switch (ch) {
+      case 'a':
+        return UP;
+        break;
+      case 'b':
+        return DOWN;
+        break;
+      case 'c':
+        return RIGHT;
+        break;
+      case 'd':
+        return LEFT;
+        break;
+      default:
+        break;
     }
-    napms(100);
+  } else {  // Normal key -> WASD
+    switch (ch) {
+      case 'w':
+        return UP;
+        break;
+      case 's':
+        return DOWN;
+        break;
+      case 'd':
+        return RIGHT;
+        break;
+      case 'a':
+        return LEFT;
+        break;
+      default:
+        break;
+    }
   }
+  return currentDirection;
 }
 
 void updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
