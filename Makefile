@@ -8,6 +8,7 @@ main: main.c
 
 debug: main.c
 	gcc -o main main.c -lncurses -g
+	gdb main
 
 clean:
 	@rm main

@@ -1,7 +1,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-#define MAX_ROWS 10
+#define MAX_ROWS 20
 #define MAX_COLS 10
 
 struct Coordinates {
@@ -10,7 +10,7 @@ struct Coordinates {
 };
 
 enum Direction { UP, DOWN, LEFT, RIGHT };
-enum Marker { SNAKE, FRUIT, EMPTY=0 };
+enum Marker { WALL='X', SNAKE='*', FRUIT='@', EMPTY=' ' };
 
 struct Snake {
   struct Coordinates head;
@@ -21,15 +21,26 @@ struct Snake {
 
 // Function prototypes
 struct Snake initSnake();
-struct Coordinates newFruit(enum Marker game_board[MAX_ROWS][MAX_COLS]);
-void printGameBoard(enum Marker game_board[MAX_ROWS][MAX_COLS]);
+struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]);
+void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]);
 int getKeyPress();
 
 int main(int argc, char *argv[]) {
   int ch;
   struct Snake snake;
   struct Coordinates fruit;
-  enum Marker game_board[MAX_ROWS][MAX_COLS];
+  char game_board[MAX_ROWS][MAX_COLS + 2];
+  for (int i=0; i < MAX_ROWS; i++) {
+    for (int j=0; j < MAX_COLS; j++) {
+      if ((i == 0) || (j == 0) || (i == MAX_ROWS - 1) || (j == MAX_COLS - 1)) {
+        game_board[i][j] = WALL;
+      } else {
+        game_board[i][j] = EMPTY;
+      }
+    }
+    game_board[i][MAX_COLS] = '\n';
+    game_board[i][MAX_COLS + 1] = '\0';
+  }
 
   initscr();
   raw();
@@ -37,6 +48,9 @@ int main(int argc, char *argv[]) {
   noecho();
 
   /*1. Press enter to start game*/
+  printw("Welcome\n");
+  printw("to\n");
+  printw("Snake\n");
   while (getch() != '\n');
 
   /*2. Generate fruit*/
@@ -67,7 +81,7 @@ struct Snake initSnake() {
   };
 }
 
-struct Coordinates newFruit(enum Marker game_board[MAX_ROWS][MAX_COLS]) {
+struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   struct Coordinates fruit;
 
   do {
@@ -78,26 +92,11 @@ struct Coordinates newFruit(enum Marker game_board[MAX_ROWS][MAX_COLS]) {
   return fruit;
 }
 
-void printGameBoard(enum Marker game_board[MAX_ROWS][MAX_COLS]) {
-  // Top
+void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   for (int i=0; i < MAX_ROWS; i++) {
-    printw("X");
+    printw("%s", (char *)game_board[i]);
   }
-  printw("\n");
-  // Walls
-  for (int j=1; j < MAX_COLS - 1; j++) {
-    printw("X");
-    for (int i=1; i < MAX_ROWS - 1; i++) {
-      printw(" ");
-    }
-    printw("X");
-    printw("\n");
-  }
-  // Bottom
-  for (int i=0; i < MAX_ROWS; i++) {
-    printw("X");
-  }
-  printw("\n");
+
   refresh();
 }
 
