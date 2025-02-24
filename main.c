@@ -1,8 +1,8 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-#define MAX_ROWS 20
-#define MAX_COLS 10
+#define MAX_ROWS 18
+#define MAX_COLS 36
 
 struct Coordinates {
   int row;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   }
 
   initscr();
-  raw();
+  cbreak();
   keypad(stdscr, TRUE);
   noecho();
 
