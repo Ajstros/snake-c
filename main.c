@@ -23,9 +23,11 @@ struct Snake {
 struct Snake initSnake();
 struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]);
 void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]);
-int getKeyPress();
+enum Direction inputLoop();
+void updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]);
 
 int main(int argc, char *argv[]) {
+  int running = 1;
   int ch;
   struct Snake snake;
   struct Coordinates fruit;
@@ -46,6 +48,7 @@ int main(int argc, char *argv[]) {
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
+  nodelay(stdscr, TRUE);
 
   /*1. Press enter to start game*/
   printw("Welcome\n");
@@ -63,11 +66,18 @@ int main(int argc, char *argv[]) {
   printGameBoard(game_board);
   getch();
 
-  /*4. Move snake according to arrow keys or WASD*/
+  while (running) {
+    /*4. Move snake according to arrow keys or WASD*/
+    snake.direction = inputLoop();
+    updateSnake(&snake, game_board);
+    printGameBoard(game_board);
 
+    /*5. Check for snake collision with fruit, edges of screen, itself*/
 
-  /*5. Check for snake collision with fruit, edges of screen, itself*/
+  }
 
+  nodelay(stdscr, FALSE);
+  getch();
   endwin();
   return 0;
 }
@@ -93,6 +103,7 @@ struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
 }
 
 void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
+  move(0, 0);
   for (int i=0; i < MAX_ROWS; i++) {
     printw("%s", (char *)game_board[i]);
   }
@@ -100,7 +111,71 @@ void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   refresh();
 }
 
-int getKeyPress() {
+enum Direction inputLoop() {
+  int ch;
+  while (1) {
+    ch = getch();
+    if (ch == '\033') { // Escape value -> Arrow keys
+      getch();      // Skip '[' value
+      ch = getch(); // Reassign ABCD value for direction of arrow key
+      switch (ch) {
+        case 'a':
+          return UP;
+          break;
+        case 'b':
+          return DOWN;
+          break;
+        case 'c':
+          return RIGHT;
+          break;
+        case 'd':
+          return LEFT;
+          break;
+        default:
+          break;
+      }
+    } else {  // Normal key -> WASD
+      switch (ch) {
+        case 'w':
+          return UP;
+          break;
+        case 's':
+          return DOWN;
+          break;
+        case 'd':
+          return RIGHT;
+          break;
+        case 'a':
+          return LEFT;
+          break;
+        default:
+          break;
+      }
+    }
+    napms(100);
+  }
+}
 
-  return 0;
+void updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
+  // Remove tail
+  game_board[snake->tail.row][snake->tail.col] = EMPTY;
+  snake->tail = snake->head;
+  // Update head
+  switch (snake->direction) {
+    case UP:
+      snake->head.row--;  // Row 0 at top of screen
+      break;
+    case DOWN:
+      snake->head.row++;  // Row 0 at top of screen
+      break;
+    case RIGHT:
+      snake->head.col++;
+      break;
+    case LEFT:
+      snake->head.col--;
+      break;
+  }
+  game_board[snake->tail.row][snake->tail.col] = SNAKE;
+
+  // TODO: check for collisions (apple, wall, self)
 }
