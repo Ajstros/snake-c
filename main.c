@@ -1,5 +1,6 @@
 #include <curses.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define MAX_ROWS 18
 #define MAX_COLS 36
@@ -63,7 +64,6 @@ int main(int argc, char *argv[]) {
   snake = initSnake();
   game_board[snake.head.row][snake.head.col] = SNAKE;
   fruit = newFruit(game_board);
-  game_board[fruit.row][fruit.col] = FRUIT;
 
   /*3. Show game board*/
   printGameBoard(game_board);
@@ -102,11 +102,14 @@ struct Snake initSnake() {
 
 struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   struct Coordinates fruit;
+  srand(time(NULL));
 
   do {
     fruit.row = rand() % MAX_ROWS;
     fruit.col = rand() % MAX_COLS;
   } while (game_board[fruit.row][fruit.col] != EMPTY);
+
+  game_board[fruit.row][fruit.col] = FRUIT;
 
   return fruit;
 }
@@ -185,7 +188,9 @@ int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
       break;
     case FRUIT:
       // Update snake
+      snake->length++;
       // Draw new fruit
+      newFruit(game_board);
       break;
     default:
       // Catches empty as well
@@ -193,4 +198,5 @@ int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
   }
 
   game_board[snake->head.row][snake->head.col] = SNAKE;
+  return 1;
 }
