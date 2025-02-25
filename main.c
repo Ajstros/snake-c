@@ -121,42 +121,35 @@ void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
 }
 
 enum Direction decodeInput(int ch, enum Direction currentDirection) {
-  if (ch == '\033') { // Escape value -> Arrow keys
-    getch();      // Skip '[' value
-    ch = getch(); // Reassign ABCD value for direction of arrow key
-    switch (ch) {
-      case 'a':
-        return UP;
-        break;
-      case 'b':
-        return DOWN;
-        break;
-      case 'c':
-        return RIGHT;
-        break;
-      case 'd':
-        return LEFT;
-        break;
-      default:
-        break;
-    }
-  } else {  // Normal key -> WASD
-    switch (ch) {
-      case 'w':
-        return UP;
-        break;
-      case 's':
-        return DOWN;
-        break;
-      case 'd':
-        return RIGHT;
-        break;
-      case 'a':
-        return LEFT;
-        break;
-      default:
-        break;
-    }
+  switch (ch) {
+    // Arrow keys
+    case 259:
+      return UP;
+      break;
+    case 258:
+      return DOWN;
+      break;
+    case 261:
+      return RIGHT;
+      break;
+    case 260:
+      return LEFT;
+      break;
+    // WASD
+    case 'w':
+      return UP;
+      break;
+    case 's':
+      return DOWN;
+      break;
+    case 'd':
+      return RIGHT;
+      break;
+    case 'a':
+      return LEFT;
+      break;
+    default:
+      break;
   }
   return currentDirection;
 }
