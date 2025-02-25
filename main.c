@@ -24,7 +24,7 @@ struct Snake initSnake();
 struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]);
 void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]);
 enum Direction decodeInput(int ch, enum Direction currentDirection);
-void updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]);
+int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]);
 
 int main(int argc, char *argv[]) {
   int running = 1;
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     updateCount += waitInterval;
     if (updateCount >= updateTime) {
       updateCount = 0;
-      updateSnake(&snake, game_board);
+      running = updateSnake(&snake, game_board);
       printGameBoard(game_board);
     }
 
@@ -154,7 +154,7 @@ enum Direction decodeInput(int ch, enum Direction currentDirection) {
   return currentDirection;
 }
 
-void updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
+int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
   // Remove tail
   game_board[snake->tail.row][snake->tail.col] = EMPTY;
   snake->tail = snake->head;
@@ -173,7 +173,24 @@ void updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
       snake->head.col--;
       break;
   }
-  game_board[snake->tail.row][snake->tail.col] = SNAKE;
 
-  // TODO: check for collisions (apple, wall, self)
+  // Check for collisions (apple, wall, self)
+  // Return 0 to stop game, 1 to continue
+  switch (game_board[snake->head.row][snake->head.col]) {
+    case SNAKE:
+      return 0;
+      break;
+    case WALL:
+      return 0;
+      break;
+    case FRUIT:
+      // Update snake
+      // Draw new fruit
+      break;
+    default:
+      // Catches empty as well
+      break;
+  }
+
+  game_board[snake->head.row][snake->head.col] = SNAKE;
 }
