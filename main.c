@@ -106,46 +106,48 @@ int main(int argc, char *argv[]) {
 
 /* Push new coordinates into the snake's body Queue. Returns the end of the snake's coordinates as they are pushed out of the Queue */
 struct Coordinates snake_push(struct Snake *snake, struct Coordinates new_coord) {
-  struct Node exit_node;
-  struct Node new_node = {
-    .data = new_coord,
-    .next = snake->body.head,
-    .prev = &new_node
-  };
+  struct Node *exit_node;
+  struct Coordinates exit_data;
+  struct Node *new_node = malloc(sizeof(struct Node));
+  // Must dynamically allocate so data is not lost when this function returns
+  new_node->data = new_coord;
+  new_node->next = snake->body.head;
+  new_node->prev = NULL;
   // Set new node as head
-  snake->body.head->prev = &new_node;
-  snake->body.head = &new_node;
+  snake->body.head->prev = new_node;
+  snake->body.head = new_node;
 
   // Remove last node, return data
-  exit_node = *(snake->body.tail);
-  snake->body.tail = exit_node.prev;
-  exit_node.prev = &exit_node;
-  return exit_node.data;
+  exit_node = snake->body.tail;
+  exit_data = exit_node->data;
+  snake->body.tail = exit_node->prev;  // Tail = Tail - 1
+  free(exit_node);
+  return exit_data;
 }
 
 /* Add new coordinates to the snake's body Queue. The Queue is made larger so no coordinates are lost. Used for updating the snake when it eats a fruit. */
 void snake_add(struct Snake *snake, struct Coordinates new_coord) {
   struct Node exit_node;
-  struct Node new_node = {
-    .data = new_coord,
-    .next = snake->body.head,
-    .prev = &new_node
-  };
+  // Must dynamically allocate so data is not lost when this function returns
+  struct Node *new_node = malloc(sizeof(struct Node));
+  new_node->data = new_coord;
+  new_node->next = snake->body.head;
+  new_node->prev = NULL;
   // Set new node as head. Do not remove last node
-  snake->body.head->prev = &new_node;
-  snake->body.head = &new_node;
+  snake->body.head->prev = new_node;
+  snake->body.head = new_node;
   snake->length++;
 }
 
 struct Queue initQueue(struct Coordinates init_coord) {
-  struct Node n = {
-    .data = init_coord,
-    .next = &n,
-    .prev = &n
-  };
+  // Must dynamically allocate so data is not lost when this function returns
+  struct Node *n = malloc(sizeof(struct Node));
+  n->data = init_coord;
+  n->next = NULL;
+  n->prev = NULL;
   return (struct Queue){
-    .head = &n,
-    .tail = &n,
+    .head = n,
+    .tail = n,
     .length = 1
   };
 }
@@ -176,10 +178,12 @@ struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
 void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   move(0, 0);
   for (int i=0; i < MAX_ROWS; i++) {
-    printw("%s", (char *)game_board[i]);
+    printw("%s", game_board[i]);
   }
 
   refresh();
+
+  return;
 }
 
 enum Direction decodeInput(int ch, enum Direction currentDirection) {
@@ -217,33 +221,31 @@ enum Direction decodeInput(int ch, enum Direction currentDirection) {
 }
 
 int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
-  struct Coordinates tail_coord;
-  struct Coordinates head_coord;
-  // Remove tail (must do before checking for collisions to prevent colliding with where our tail used to be)
+  struct Coordinates prev_tail_coord;
+  struct Coordinates next_head_coord = snake->body.head->data;
+  // Remove tail from game board (must do before checking for collisions to prevent colliding with where our tail used to be)
   // Save the coordinates so we can add it back if we collide with a fruit
-  tail_coord = snake->body.tail->data;
-  game_board[tail_coord.row][tail_coord.col] = EMPTY;
-  snake->body.tail = snake->body.tail->prev;  // Reassign tail to 2nd to last node
-  snake->body.tail->next = snake->body.tail;  // Remove previous tail from next reference
-  // Update body.head.data
+  prev_tail_coord = snake->body.tail->data;
+  game_board[prev_tail_coord.row][prev_tail_coord.col] = EMPTY;
+  // Calculate new head coordinates
   switch (snake->direction) {
     case UP:
-      snake->body.head->data.row--;  // Row 0 at top of screen
+      next_head_coord.row  = snake->body.head->data.row - 1;  // Row 0 is at top of screen
       break;
     case DOWN:
-      snake->body.head->data.row++;  // Row 0 at top of screen
+      next_head_coord.row  = snake->body.head->data.row + 1;  // Row 0 is at top of screen
       break;
     case RIGHT:
-      snake->body.head->data.col++;
+      next_head_coord.col  = snake->body.head->data.col + 1;
       break;
     case LEFT:
-      snake->body.head->data.col--;
+      next_head_coord.col  = snake->body.head->data.col - 1;
       break;
   }
 
   // Check for collisions (apple, wall, self)
   // Return 0 to stop game, 1 to continue
-  switch (game_board[tail_coord.col][snake->body.head->data.col]) {
+  switch (game_board[next_head_coord.row][next_head_coord.col]) {
     case SNAKE:
       return 0;
       break;
@@ -252,19 +254,22 @@ int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
       break;
     case FRUIT:
       // Update snake
-      snake->length++;
-      snake->body.tail = &((struct Node) {
-        .prev = snake->body.tail,
-        .data = tail_coord
-      });
+      snake_add(snake, next_head_coord);
+      // Add new snake head
+      game_board[next_head_coord.row][next_head_coord.col] = SNAKE;
+      // Add old tail back
+      game_board[prev_tail_coord.row][prev_tail_coord.col] = SNAKE;
       // Draw new fruit
       newFruit(game_board);
       break;
     default:
       // Catches empty as well
+      // Update as normal
+      snake_push(snake, next_head_coord);
+      // Add new snake head
+      game_board[next_head_coord.row][next_head_coord.col] = SNAKE;
       break;
   }
 
-  game_board[snake->body.head->data.row][snake->body.head->data.col] = SNAKE;
   return 1;
 }
