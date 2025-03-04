@@ -90,12 +90,10 @@ int main(int argc, char *argv[]) {
     updateCount += waitInterval;
     if (updateCount >= updateTime) {
       updateCount = 0;
+      /*5. Check for snake collision with fruit, edges of screen, itself*/
       running = updateSnake(&snake, game_board);
       printGameBoard(game_board);
     }
-
-    /*5. Check for snake collision with fruit, edges of screen, itself*/
-
   }
 
   nodelay(stdscr, FALSE);
