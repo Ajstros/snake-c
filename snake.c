@@ -7,8 +7,7 @@ struct Coordinates snake_push(struct Snake *snake, struct Coordinates new_coord)
   struct Node *exit_node;
   struct Coordinates exit_data;
   struct Node *new_node = malloc(sizeof(struct Node));
-  /* Must dynamically allocate so data is not lost when this function returns
-  * */
+  /* Must dynamically allocate so data is not lost when this function returns */
   new_node->data = new_coord;
   new_node->next = snake->body.head;
   new_node->prev = NULL;
