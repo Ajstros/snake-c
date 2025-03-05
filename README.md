@@ -2,6 +2,10 @@ Snake game.
 
 Want snake to go around the screen in a terminal and eat fruits.
 
+# Build Instructions
+Use `make` to build and run the program. Use `make debug` to build and enter
+GDB.
+
 # Snake
 Create snake with icon *
 * Snake is connected
