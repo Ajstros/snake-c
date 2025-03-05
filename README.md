@@ -39,3 +39,13 @@ Need to:
     returns, the pointer points to garbage. When I tried to use that pointer to
     get at the data I created earlier, the garbage I got instead led to a
     segfault.
+
+# File Structure
+- src/
+    - main.h
+    - snake.h
+    - queue.h
+    - main.c
+    - snake.c
+    - queue.c
+    - Makefile
