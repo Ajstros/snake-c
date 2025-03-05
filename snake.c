@@ -3,7 +3,6 @@
 #include "queue.h"
 #include "snake.h"
 
-/* Push new coordinates into the snake's body Queue. Returns the end of the snake's coordinates as they are pushed out of the Queue */
 struct Coordinates snake_push(struct Snake *snake, struct Coordinates new_coord) {
   struct Node *exit_node;
   struct Coordinates exit_data;
@@ -24,7 +23,6 @@ struct Coordinates snake_push(struct Snake *snake, struct Coordinates new_coord)
   return exit_data;
 }
 
-/* Add new coordinates to the snake's body Queue. The Queue is made larger so no coordinates are lost. Used for updating the snake when it eats a fruit. */
 void snake_add(struct Snake *snake, struct Coordinates new_coord) {
   struct Node exit_node;
   // Must dynamically allocate so data is not lost when this function returns
@@ -38,7 +36,6 @@ void snake_add(struct Snake *snake, struct Coordinates new_coord) {
   snake->length++;
 }
 
-/* Initialize Snake structure. Snake starts in the middle of the grid defined by MAX_ROWS, MAX_COLS with a length of 1 moving UP. */
 struct Snake initSnake() {
   struct Coordinates init_coord = {MAX_ROWS / 2, MAX_COLS / 2};
   return (struct Snake){

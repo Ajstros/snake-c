@@ -18,7 +18,8 @@ struct Queue {
   int length;
 };
 
-// Function prototypes
+/* Function prototypes */
+// Initialize the Queue struct with one node containing initial coordinates.
 struct Queue initQueue(struct Coordinates init_coord);
 
 #endif // SNAKE_QUEUE_H_
