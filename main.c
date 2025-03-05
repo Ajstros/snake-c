@@ -5,9 +5,7 @@
 
 int main(int argc, char *argv[]) {
   int running = 1;
-  int update_time = 200;
   int update_count = 0;
-  int wait_interval = 20;
   int ch;
   struct Snake snake;
   struct Coordinates fruit;
@@ -49,9 +47,9 @@ int main(int argc, char *argv[]) {
     /*4. Move snake according to arrow keys or WASD*/
     ch = getch();
     snake.direction = decode_input(ch, snake.direction);
-    napms(wait_interval);
-    update_count += wait_interval;
-    if (update_count >= update_time) {
+    napms(WAIT_INTERVAL);
+    update_count += WAIT_INTERVAL;
+    if (update_count >= UPDATE_TIME) {
       update_count = 0;
       /*5. Check for snake collision with fruit, edges of screen, itself*/
       running = update_snake(&snake, game_board);

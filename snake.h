@@ -3,6 +3,8 @@
 
 #include "queue.h"
 
+#define UPDATE_TIME 200
+#define WAIT_INTERVAL 20
 #define MAX_ROWS 18
 #define MAX_COLS 36
 
