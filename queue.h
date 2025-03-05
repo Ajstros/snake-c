@@ -19,7 +19,11 @@ struct Queue {
 };
 
 /* Function prototypes */
-// Initialize the Queue struct with one node containing initial coordinates.
+/**
+ * \brief           Initialize the Queue with one node containing initial coordinates
+ * \param[in]       init_coord: initial coordinates for the first node
+ * \return          Initialized Queue struct
+ */
 struct Queue init_queue(struct Coordinates init_coord);
 
-#endif // SNAKE_QUEUE_H_
+#endif /* SNAKE_QUEUE_H_ */

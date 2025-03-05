@@ -6,10 +6,10 @@
 #define MAX_ROWS 18
 #define MAX_COLS 36
 
-// Direction of Snake movement
+/* Direction of Snake movement */
 enum Direction { UP, DOWN, LEFT, RIGHT };
 
-// Snake player
+/* Snake player */
 struct Snake {
   struct Queue body;
   int length;
@@ -17,14 +17,27 @@ struct Snake {
 };
 
 /* Function Prototypes */
-// Push new coordinates into the snake's body Queue. Returns the end of the
-// snake's coordinates as they are pushed out of the Queue
+/**
+ * \brief           Push new coordinates into the snake's body Queue
+ * \param[in,out]   snake: Snake struct being pushed to
+ * \param[in]       new_coord: new coordinates being pushed in
+ * \return          End of the snake coordinates pushed out of the Queue
+ */
 struct Coordinates snake_push(struct Snake *snake, struct Coordinates new_coord);
-// Add new coordinates to the snake's body Queue. The Queue is made larger so no
-// coordinates are lost. Used for updating the snake when it eats a fruit.
+
+/**
+ * \brief           Add new coordinates to the snake's body Queue
+ * \note            The Queue is made larger so no coordinates are lost. Used
+ *                      for updating the snake when it eats a fruit.
+ * \param[in,out]   snake: Snake struct being pushed to
+ * \param[in]       new_coord: new coordinates being pushed in
+ */
 void snake_add(struct Snake *snake, struct Coordinates new_coord);
-// Initialize Snake structure. Snake starts in the middle of the grid defined by
-// MAX_ROWS, MAX_COLS with a length of 1 moving UP.
+
+/**
+ * \brief           Initialize Snake structure in the middle of the grid with length 1 moving UP
+ * \returns         Initialized Snake struct
+ */
 struct Snake init_snake();
 
-#endif // SNAKE_SNAKE_H_
+#endif /* SNAKE_SNAKE_H_ */
