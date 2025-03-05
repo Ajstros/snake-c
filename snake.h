@@ -25,6 +25,6 @@ struct Coordinates snake_push(struct Snake *snake, struct Coordinates new_coord)
 void snake_add(struct Snake *snake, struct Coordinates new_coord);
 // Initialize Snake structure. Snake starts in the middle of the grid defined by
 // MAX_ROWS, MAX_COLS with a length of 1 moving UP.
-struct Snake initSnake();
+struct Snake init_snake();
 
 #endif // SNAKE_SNAKE_H_

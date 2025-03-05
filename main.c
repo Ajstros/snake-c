@@ -1,13 +1,13 @@
+#include "main.h"
 #include <curses.h>
 #include <stdlib.h>
 #include <time.h>
-#include "main.h"
 
 int main(int argc, char *argv[]) {
   int running = 1;
-  int updateTime = 200;
-  int updateCount = 0;
-  int waitInterval = 20;
+  int update_time = 200;
+  int update_count = 0;
+  int wait_interval = 20;
   int ch;
   struct Snake snake;
   struct Coordinates fruit;
@@ -32,30 +32,30 @@ int main(int argc, char *argv[]) {
 
   /*1. Press enter to start game*/
   printw("Welcome\n");
-  printw("to\n");
-  printw("Snake\n");
+  printw("  to\n");
+  printw(" Snake\n");
   while (getch() != '\n');
 
   /*2. Generate fruit*/
-  snake = initSnake();
+  snake = init_snake();
   game_board[snake.body.head->data.row][snake.body.head->data.col] = SNAKE;
-  fruit = newFruit(game_board);
+  fruit = new_fruit(game_board);
 
   /*3. Show game board*/
-  printGameBoard(game_board);
+  print_game_board(game_board);
   getch();
 
   while (running) {
     /*4. Move snake according to arrow keys or WASD*/
     ch = getch();
-    snake.direction = decodeInput(ch, snake.direction);
-    napms(waitInterval);
-    updateCount += waitInterval;
-    if (updateCount >= updateTime) {
-      updateCount = 0;
+    snake.direction = decode_input(ch, snake.direction);
+    napms(wait_interval);
+    update_count += wait_interval;
+    if (update_count >= update_time) {
+      update_count = 0;
       /*5. Check for snake collision with fruit, edges of screen, itself*/
-      running = updateSnake(&snake, game_board);
-      printGameBoard(game_board);
+      running = update_snake(&snake, game_board);
+      print_game_board(game_board);
     }
   }
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
+struct Coordinates new_fruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   struct Coordinates fruit;
   srand(time(NULL));
 
@@ -79,7 +79,7 @@ struct Coordinates newFruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   return fruit;
 }
 
-void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
+void print_game_board(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   move(0, 0);
   for (int i=0; i < MAX_ROWS; i++) {
     printw("%s", game_board[i]);
@@ -90,7 +90,7 @@ void printGameBoard(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   return;
 }
 
-enum Direction decodeInput(int ch, enum Direction currentDirection) {
+enum Direction decode_input(int ch, enum Direction current_direction) {
   switch (ch) {
     // Arrow keys
     case 259:
@@ -121,10 +121,10 @@ enum Direction decodeInput(int ch, enum Direction currentDirection) {
     default:
       break;
   }
-  return currentDirection;
+  return current_direction;
 }
 
-int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
+int update_snake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
   struct Coordinates prev_tail_coord;
   struct Coordinates next_head_coord = snake->body.head->data;
   // Remove tail from game board (must do before checking for collisions to prevent colliding with where our tail used to be)
@@ -164,7 +164,7 @@ int updateSnake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
       // Add old tail back
       game_board[prev_tail_coord.row][prev_tail_coord.col] = SNAKE;
       // Draw new fruit
-      newFruit(game_board);
+      new_fruit(game_board);
       break;
     default:
       // Catches empty as well

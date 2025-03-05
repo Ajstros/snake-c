@@ -1,7 +1,7 @@
+#include "snake.h"
 #include <stdlib.h>
 #include <time.h>
 #include "queue.h"
-#include "snake.h"
 
 struct Coordinates snake_push(struct Snake *snake, struct Coordinates new_coord) {
   struct Node *exit_node;
@@ -36,10 +36,10 @@ void snake_add(struct Snake *snake, struct Coordinates new_coord) {
   snake->length++;
 }
 
-struct Snake initSnake() {
+struct Snake init_snake() {
   struct Coordinates init_coord = {MAX_ROWS / 2, MAX_COLS / 2};
   return (struct Snake){
-    .body = initQueue(init_coord),
+    .body = init_queue(init_coord),
     .length = 1,
     .direction = UP,
   };
