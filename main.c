@@ -10,6 +10,8 @@ int main(int argc, char *argv[]) {
   struct Snake snake;
   struct Coordinates fruit;
   char game_board[MAX_ROWS][MAX_COLS + 2];
+
+  /* Set up initial game board */
   for (int i=0; i < MAX_ROWS; i++) {
     for (int j=0; j < MAX_COLS; j++) {
       if ((i == 0) || (j == 0) || (i == MAX_ROWS - 1) || (j == MAX_COLS - 1)) {
@@ -21,6 +23,9 @@ int main(int argc, char *argv[]) {
     game_board[i][MAX_COLS] = '\n';
     game_board[i][MAX_COLS + 1] = '\0';
   }
+
+  /* Seed random */
+  srand(time(NULL));
 
   initscr();
   cbreak();
@@ -70,7 +75,6 @@ int main(int argc, char *argv[]) {
  */
 struct Coordinates new_fruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   struct Coordinates fruit;
-  srand(time(NULL));
 
   do {
     fruit.row = rand() % MAX_ROWS;
