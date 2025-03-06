@@ -1,7 +1,11 @@
 #include "main.h"
+#include "snake.h"
 #include <curses.h>
 #include <stdlib.h>
 #include <time.h>
+
+static int screen_rows;
+static int screen_cols;
 
 int main(int argc, char *argv[]) {
   int running = 1;
@@ -32,6 +36,7 @@ int main(int argc, char *argv[]) {
   keypad(stdscr, TRUE);
   noecho();
   nodelay(stdscr, TRUE);
+  getmaxyx(stdscr, screen_rows, screen_cols);
 
   /*1. Press enter to start game*/
   printw("Welcome\n");
@@ -91,9 +96,10 @@ struct Coordinates new_fruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
  * \param[in,out]     game_board: the game board array to read and update
  */
 void print_game_board(char game_board[MAX_ROWS][MAX_COLS + 2]) {
-  move(0, 0);
+  int start_row = (screen_rows / 2) - (MAX_ROWS / 2);
+  int start_col = (screen_cols / 2) - (MAX_COLS / 2);
   for (int i=0; i < MAX_ROWS; i++) {
-    printw("%s", game_board[i]);
+    mvprintw(start_row + i, start_col, "%s", game_board[i]);
   }
 
   refresh();
