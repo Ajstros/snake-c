@@ -39,9 +39,7 @@ int main(int argc, char *argv[]) {
   getmaxyx(stdscr, screen_rows, screen_cols);
 
   /*1. Press enter to start game*/
-  printw("Welcome\n");
-  printw("  to\n");
-  printw(" Snake\n");
+  print_game_start();
   while (getch() != '\n');
 
   /*2. Generate fruit*/
@@ -51,6 +49,7 @@ int main(int argc, char *argv[]) {
 
   /*3. Show game board*/
   print_game_board(game_board);
+  print_score(snake.length);
   getch();
 
   while (running) {
@@ -66,6 +65,8 @@ int main(int argc, char *argv[]) {
       print_game_board(game_board);
     }
   }
+
+  print_game_over(&snake);
 
   nodelay(stdscr, FALSE);
   getch();
@@ -196,6 +197,7 @@ int update_snake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
       game_board[prev_tail_coord.row][prev_tail_coord.col] = SNAKE;
       /* Draw new fruit */
       new_fruit(game_board);
+      print_score(snake->length);
       break;
     default:
       /* Catches empty as well */
@@ -207,4 +209,68 @@ int update_snake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
   }
 
   return 1;
+}
+
+/**
+ * \brief             Show the game start screen
+ */
+void print_game_start() {
+  // Total of 3 lines:
+  // Welcome  (7)
+  //   to     (2)
+  //  Snake   (5)
+
+  // Welcome
+  int start_row = (screen_rows / 2) - (3 / 2);
+  int start_col = (screen_cols / 2) - (7 / 2);
+  mvprintw(start_row, start_col, "Welcome");
+  start_row++;
+
+  start_col = (screen_cols / 2) - (2 / 2);
+  mvprintw(start_row, start_col, "to");
+  start_row++;
+
+  start_col = (screen_cols / 2) - (5 / 2);
+  mvprintw(start_row, start_col, "Snake");
+  start_row++;
+
+  refresh();
+
+  return;
+}
+
+/**
+ * \brief             Show the game over screen with the final score
+ * \param[in,out]     snake: Snake struct from gameplay. Used for length score
+ */
+void print_game_over(struct Snake *snake) {
+  // Center "Game Over" which is 11 characters. We will have 2 lines:
+  //    Game Over
+  //    Score: 1
+  int start_row = (screen_rows / 2) - ( 2 / 2);
+  int start_col = (screen_cols / 2) - (11 / 2);
+
+  mvprintw(start_row, start_col, "Game Over");
+  mvprintw(start_row + 1, start_col, "Score: %d", snake->length);
+
+  refresh();
+
+  return;
+}
+
+/**
+ * \brief             Show the game over screen with the final score
+ * \param[in,out]     snake: Snake struct from gameplay. Used for length score
+ */
+void print_score(int score) {
+  // Same logic as start of print_game_board so score lines up with the top
+  // left corner of the game border
+  int start_row = (screen_rows / 2) - (MAX_ROWS / 2) - 1; // 1 row above game board
+  int start_col = (screen_cols / 2) - (MAX_COLS / 2);     // Same column as game board start
+
+  mvprintw(start_row, start_col, "Score: %d", score);
+
+  refresh();
+
+  return;
 }
