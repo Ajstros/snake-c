@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
 
   /*1. Press enter to start game*/
   print_game_start();
+  refresh();
   while (getch() != '\n');
 
   /*2. Generate fruit*/
@@ -50,6 +51,7 @@ int main(int argc, char *argv[]) {
   /*3. Show game board*/
   print_game_board(game_board);
   print_score(snake.length);
+  refresh();
   getch();
 
   while (running) {
@@ -63,10 +65,12 @@ int main(int argc, char *argv[]) {
       /*5. Check for snake collision with fruit, edges of screen, itself*/
       running = update_snake(&snake, game_board);
       print_game_board(game_board);
+      refresh();
     }
   }
 
   print_game_over(&snake);
+  refresh();
 
   nodelay(stdscr, FALSE);
   getch();
@@ -94,6 +98,8 @@ struct Coordinates new_fruit(char game_board[MAX_ROWS][MAX_COLS + 2]) {
 
 /**
  * \brief             Print the game board to the screen at (0,0)
+ * \note              Does not call refresh() so multiple prints can happen
+ *                    before updating the screen.
  * \param[in,out]     game_board: the game board array to read and update
  */
 void print_game_board(char game_board[MAX_ROWS][MAX_COLS + 2]) {
@@ -102,8 +108,6 @@ void print_game_board(char game_board[MAX_ROWS][MAX_COLS + 2]) {
   for (int i=0; i < MAX_ROWS; i++) {
     mvprintw(start_row + i, start_col, "%s", game_board[i]);
   }
-
-  refresh();
 
   return;
 }
@@ -213,6 +217,8 @@ int update_snake(struct Snake *snake, char game_board[MAX_ROWS][MAX_COLS + 2]) {
 
 /**
  * \brief             Show the game start screen
+ * \note              Does not call refresh() so multiple prints can happen
+ *                    before updating the screen.
  */
 void print_game_start() {
   // Total of 3 lines:
@@ -234,13 +240,13 @@ void print_game_start() {
   mvprintw(start_row, start_col, "Snake");
   start_row++;
 
-  refresh();
-
   return;
 }
 
 /**
  * \brief             Show the game over screen with the final score
+ * \note              Does not call refresh() so multiple prints can happen
+ *                    before updating the screen.
  * \param[in,out]     snake: Snake struct from gameplay. Used for length score
  */
 void print_game_over(struct Snake *snake) {
@@ -253,13 +259,13 @@ void print_game_over(struct Snake *snake) {
   mvprintw(start_row, start_col, "Game Over");
   mvprintw(start_row + 1, start_col, "Score: %d", snake->length);
 
-  refresh();
-
   return;
 }
 
 /**
  * \brief             Show the game over screen with the final score
+ * \note              Does not call refresh() so multiple prints can happen
+ *                    before updating the screen.
  * \param[in,out]     snake: Snake struct from gameplay. Used for length score
  */
 void print_score(int score) {
@@ -269,8 +275,6 @@ void print_score(int score) {
   int start_col = (screen_cols / 2) - (MAX_COLS / 2);     // Same column as game board start
 
   mvprintw(start_row, start_col, "Score: %d", score);
-
-  refresh();
 
   return;
 }
