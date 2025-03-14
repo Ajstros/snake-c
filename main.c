@@ -8,7 +8,6 @@ static int screen_rows;
 static int screen_cols;
 
 int main(int argc, char *argv[]) {
-  int running = 1;
   int update_count = 0;
   int ch;
   struct Snake snake;
@@ -54,7 +53,7 @@ int main(int argc, char *argv[]) {
   refresh();
   getch();
 
-  while (running) {
+  while (1) {
     /*4. Move snake according to arrow keys or WASD*/
     ch = getch();
     snake.direction = decode_input(ch, snake.direction);
@@ -63,14 +62,18 @@ int main(int argc, char *argv[]) {
     if (update_count >= UPDATE_TIME) {
       update_count = 0;
       /*5. Check for snake collision with fruit, edges of screen, itself*/
-      running = update_snake(&snake, game_board);
-      print_game_board(game_board);
-      refresh();
+      if (update_snake(&snake, game_board)) {
+        // Continue Game
+        print_game_board(game_board);
+        refresh();
+      } else {
+        // End Game
+        print_game_over(&snake);
+        refresh();
+        break;
+      }
     }
   }
-
-  print_game_over(&snake);
-  refresh();
 
   nodelay(stdscr, FALSE);
   getch();
@@ -239,6 +242,10 @@ void print_game_start() {
   start_col = (screen_cols / 2) - (5 / 2);
   mvprintw(start_row, start_col, "Snake");
   start_row++;
+
+  start_row += 5;
+  start_col = (screen_cols / 2) - (25 / 2);
+  mvprintw(start_row, start_col, "(Press Enter to start...)");
 
   return;
 }

@@ -1,10 +1,12 @@
-Snake game.
-
-Want snake to go around the screen in a terminal and eat fruits.
+# Snake
+A simple terminal snake game written in C using curses. Change the snake's
+direction using the arrow keys or WASD. Try to eat the fruit that appears to
+grow the snake longer. Avoid hitting the walls and the rest of the snake to
+stay alive.
 
 # Build Instructions
 Use `make` to build and run the program. Use `make debug` to build and enter
-GDB.
+GDB. Requires curses library.
 
 # Snake
 Create snake with icon *
